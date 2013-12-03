@@ -2,6 +2,15 @@
 <!-- <web-app xmlns:xsi="http://www.w2.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">  -->
 <web-app xmlns:xsi="http://www.w2.org/2001/XMLSchema-instance" xmlns:web="http://java.sun.com/xml/ns/javaee" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
   <listener>
-    <listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>
+  	<listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>
   </listener>
+  <servlet>  
+ <servlet-name>initServlet</servlet-name>  
+ <servlet-class>com.ron.weixin.initServlet</servlet-class>  
+ <init-param>  
+ <param-name>developement</param-name>  
+ <param-value>true</param-value>  
+ </init-param>  
+ 	<load-on-startup>1</load-on-startup>  
+ </servlet>
 </web-app>

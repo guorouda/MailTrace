@@ -9,7 +9,6 @@ import com.ron.weixin.pereference.SystemGlobals;
 import  it.sauronsoftware.ftp4j.*;
 
 public class FtpDownloadClienter{
-//	static Log log = LogFactory.getLog(FtpDownloadClienter.class);
 	private static Logger log = Logger.getLogger(FtpDownloadClienter.class);
 	
 	private FTPClient client = new FTPClient();
@@ -36,6 +35,7 @@ public class FtpDownloadClienter{
 
 
     public boolean closeConnection() {
+    	log.info("Try disconnecting...");
         if ( null != client && client.isConnected()) {
           try {
                 client.disconnect(true);
@@ -49,10 +49,15 @@ public class FtpDownloadClienter{
     }
     
     public  void download(String remoteFolderPath, String remoteFileName, String localFolderPath) {
+        String tmpRFN[] = remoteFileName.split("_");
+        log.debug(SystemGlobals.getProvince(tmpRFN[1]));
+        
         try {
             log.info(remoteFolderPath + "/" + remoteFileName +": " + client.fileSize(remoteFolderPath + "/" + remoteFileName));
             client.changeDirectory(remoteFolderPath);
-            client.download(remoteFileName, new File( localFolderPath + File.separator + new File(remoteFileName).getName()), SystemGlobals.getFileLength(), new MyTransferListener());
+            int start = Integer.parseInt(SystemGlobals.getProvince(tmpRFN[1]));
+            client.download(remoteFileName, new File( localFolderPath + File.separator + new File(remoteFileName).getName()), start, new MyTransferListener());
+            SystemGlobals.setProvince(tmpRFN[1], Integer.toString((SystemGlobals.getFileLength() + start)));
         } catch (FTPException e) {
             e.printStackTrace();
         	if(e.getCode() == 550){
@@ -61,7 +66,33 @@ public class FtpDownloadClienter{
         } catch (Exception e) {
             e.printStackTrace();
         } finally{
+        	log.info("Downloaded: " + remoteFolderPath + "/" + remoteFileName);
         }
     }
+    
+    
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		log.debug("Ftp startting...");
+		
+		String ftpHost = "192.168.202.13";       
+		int ftpPort = 21;
+		String ftpUser = "jiangsu";
+		String ftpPasswd = "password";
+		
+		FtpDownloadClienter myFtp = new FtpDownloadClienter(ftpHost, ftpPort, ftpUser, ftpPasswd);
+		try{
+			myFtp.openConnection();
+			FtpThread ftpThread = new FtpThread(myFtp);
+			for(int i = 0; i <= 30; i++){
+				Thread t = new Thread(ftpThread);
+				t.start();
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+//			myFtp.closeConnection();
+		}
+	}
     
 }

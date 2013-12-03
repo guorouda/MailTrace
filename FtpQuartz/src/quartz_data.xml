@@ -16,7 +16,8 @@
                 <name>FtpJob</name>
                 <job-name>FtpJob</job-name>
 <!--                  <cron-expression>0 0/5 * 1/1 * ? *</cron-expression> -->
-                <cron-expression>0 * * * * ? *</cron-expression>
+<!--                  <cron-expression>0 * * * * ? *</cron-expression> -->
+                <cron-expression>0 0/1 * * * ? *</cron-expression>
             </cron>
         </trigger>
     </schedule>

@@ -15,7 +15,8 @@ public class FtpThread implements Runnable {
 //	private String ftpPasswd = "password";
 	
 	private String interfaceCode[] = {"03003", "03004", "03016"};
-	private String province[][] = {{"anhui", "34"}, {"beijing", "11"}, {"chongqing", "50"}, {"fujian", "35"}, {"gansu", "62"}, {"guangdong", "44"}, {"guangxi", "45"}, {"guizhou", "52"}, {"hainan", "46"}, {"hebei", "13"}, {"heilongjiang", "23"}, {"henan", "41"}, {"hubei", "42"}, {"hunan", "43"}, {"jiangsu", "32"}, {"jiangxi", "36"}, {"jilin", "22"}, {"liaoning", "21"}, {"neimenggu", "15"}, {"ningxia", "64"}, {"qinghai", "63"}, {"shandong", "37"}, {"shang3xi", "61"}, {"shanghai", "31"}, {"shanxi", "14"}, {"sichuan", "51"}, {"tianjin", "12"}, {"xinjiang", "65"}, {"xizang", "54"}, {"yunnan", "53"}, {"zhejiang", "33"}};
+//	private String province[][] = {{"anhui", "34"}, {"beijing", "11"}, {"chongqing", "50"}, {"fujian", "35"}, {"gansu", "62"}, {"guangdong", "44"}, {"guangxi", "45"}, {"guizhou", "52"}, {"hainan", "46"}, {"hebei", "13"}, {"heilongjiang", "23"}, {"henan", "41"}, {"hubei", "42"}, {"hunan", "43"}, {"jiangsu", "32"}, {"jiangxi", "36"}, {"jilin", "22"}, {"liaoning", "21"}, {"neimenggu", "15"}, {"ningxia", "64"}, {"qinghai", "63"}, {"shandong", "37"}, {"shang3xi", "61"}, {"shanghai", "31"}, {"shanxi", "14"}, {"sichuan", "51"}, {"tianjin", "12"}, {"xinjiang", "65"}, {"xizang", "54"}, {"yunnan", "53"}, {"zhejiang", "33"}};
+	private String province[][] = {{"beijing", "11"}};
 	
 	private FtpDownloadClienter ftp;
 
@@ -32,7 +33,7 @@ public class FtpThread implements Runnable {
        
        // FtpDownloadClienter ftp = new FtpDownloadClienter( ftpIp, ftpPort, ftpUser, ftpPasswd);
         String remoteFolderPath = "/home/" + province[x][0] + "/" +  df.format(d);
-        String remoteFileName = interfaceCode[0] + "_" + province[x][1] + "_" +df.format(d)+".dat";    
+        String remoteFileName = interfaceCode[1] + "_" + province[x][1] + "_" +df.format(d)+".dat";    
         ftp.download(remoteFolderPath, remoteFileName, "d:\\Temp");
         
         log.info(x + ":" + remoteFolderPath + " : " + remoteFileName);

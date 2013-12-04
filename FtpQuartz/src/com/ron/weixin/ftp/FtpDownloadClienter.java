@@ -53,8 +53,12 @@ public class FtpDownloadClienter{
         log.debug(SystemGlobals.getProvince(tmpRFN[1]));
         
         try {
-            log.info(remoteFolderPath + "/" + remoteFileName +": " + client.fileSize(remoteFolderPath + "/" + remoteFileName));
             client.changeDirectory(remoteFolderPath);
+            File file = new File(remoteFolderPath + "/" + remoteFileName);
+            if(file.exists()){
+            	log.info(remoteFolderPath + "/" + remoteFileName +": " + client.fileSize(remoteFolderPath + "/" + remoteFileName));
+            	file.delete();
+            }
             int start = Integer.parseInt(SystemGlobals.getProvince(tmpRFN[1]));
             client.download(remoteFileName, new File( localFolderPath + File.separator + new File(remoteFileName).getName()), start, new MyTransferListener());
             SystemGlobals.setProvince(tmpRFN[1], Integer.toString((SystemGlobals.getFileLength() + start)));
@@ -84,7 +88,7 @@ public class FtpDownloadClienter{
 		try{
 			myFtp.openConnection();
 			FtpThread ftpThread = new FtpThread(myFtp);
-			for(int i = 0; i <= 30; i++){
+			for(int i = 0; i <= 0; i++){
 				Thread t = new Thread(ftpThread);
 				t.start();
 			}

@@ -1,2 +1,12 @@
 2013-12-02 10:17:22:DEBUG main com.ron.weixin.test.TestProperties - dean
 2013-12-02 10:17:22:DEBUG main com.ron.weixin.test.TestProperties - 
+2013-12-04 06:07:46:DEBUG main com.ron.weixin.ftp.FtpDownloadClienter - Ftp startting...
+2013-12-04 06:07:47:INFO main com.ron.weixin.ftp.FtpDownloadClienter - flag：true
+2013-12-04 06:07:47:DEBUG Thread-0 com.ron.weixin.ftp.FtpDownloadClienter - 
+2013-12-04 06:07:47:INFO Thread-0 com.ron.weixin.ftp.FtpDownloadClienter - /home/jiangsu/20131204/03004_32_20131204.dat: 125328
+2013-12-04 06:07:47:INFO Thread-0 com.ron.weixin.ftp.FtpDownloadClienter - Downloaded: /home/jiangsu/20131204/03004_32_20131204.dat
+2013-12-04 06:07:47:INFO Thread-0 com.ron.weixin.ftp.FtpThread - 0:/home/jiangsu/20131204 : 03004_32_20131204.dat
+2013-12-04 06:09:06:DEBUG main com.ron.weixin.ftp.FtpDownloadClienter - Ftp startting...
+2013-12-04 06:09:06:INFO main com.ron.weixin.ftp.FtpDownloadClienter - flag：true
+2013-12-04 06:09:16:DEBUG Thread-0 com.ron.weixin.ftp.FtpDownloadClienter - 
+2013-12-04 06:09:16:INFO Thread-0 com.ron.weixin.ftp.FtpDownloadClienter - Downloaded: /home/jiangsu/20131204/03004_32_20131204.dat

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -13,7 +14,7 @@ import com.ron.weixin.pereference.SystemGlobals;
 
 public class TestCase {
 	private static Logger log = Logger.getLogger(TestCase.class);
-
+	
 	@Test
 	public void test() {
 		fail("Not yet implemented");
@@ -40,7 +41,7 @@ public class TestCase {
         String remoteFileName = "03003_32_" +df.format(d)+".dat";    
         log.debug(remoteFolderPath);
         log.debug(remoteFileName);
-        ftp.download(remoteFolderPath, remoteFileName, "d:\\Temp");
+        ftp.download(0, remoteFolderPath, remoteFileName, "d:\\Temp");
         log.info("complete: " + SystemGlobals.getFileLength());
 	}
 	

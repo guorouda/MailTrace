@@ -19,7 +19,7 @@ public class MyTransferListener implements FTPDataTransferListener {
 	public void transferred(int length) {
 		// Yet other length bytes has been transferred since the last time this
 		// method was called
-		log.debug(length);
+	//	log.debug(length);
 		totalTransfered += length;
 	}
     

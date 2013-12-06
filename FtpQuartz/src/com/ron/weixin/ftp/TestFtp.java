@@ -33,7 +33,7 @@ public class TestFtp {
 		        String remoteFolderPath = "/home/" + province[x][0] + "/" +  df.format(d);
 		        String remoteFileName = interfaceCode[0] + "_" + province[x][1] + "_" + df.format(d) + ".dat";    
 		        
-		        ftp.download(remoteFolderPath, remoteFileName, "d:\\Temp");
+		        ftp.download(0, remoteFolderPath, remoteFileName, "d:\\Temp");
 		        
 		        ++x;
 		        log.debug(Thread.currentThread().getName()+ "$" + x + ":" + remoteFolderPath + " : " + remoteFileName);

@@ -67,7 +67,10 @@ public class FtpDownloadClienter{
             String[] tempFileNames = new String[fileNames.size()];
             fileNames.toArray(tempFileNames);
             Arrays.sort(tempFileNames);
-            Arrays.binarySearch(tempFileNames, tmpRFN[0] + "_" + tmpRFN[1] + "_" + dfH.format(new Date(d.getTime() + 1000 * 60 * 60)) + ".dat");
+            if(Arrays.binarySearch(tempFileNames, tmpRFN[0] + "_" + tmpRFN[1] + "_" + dfH.format(new Date(d.getTime() + 1000 * 60 * 60)) + ".dat")>0){
+            	int timeswitch = 0;
+            	timeswitch++;
+            }
             log.debug("NEXT: " + tmpRFN[0] + "_" + tmpRFN[1] + "_" + dfH.format(new Date(d.getTime() + 1000 * 60 * 60)) + ".dat");
             
             File file = new File("d:\\temp\\" + remoteFileName);

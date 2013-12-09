@@ -7,17 +7,16 @@ import java.util.Properties;
 
 
 public class SystemGlobals implements VariableStore {
+	private static SystemGlobals globals = new SystemGlobals();
 	
 	private int fileLength = 0;
 	private List<String> keywords = new ArrayList<String>();
 	private String[] tempKeywords;
 	
-	private static SystemGlobals globals = new SystemGlobals();
-	//private Properties provinces = new Properties();
 	private static String[] interfaceCode = {"03003", "03004", "03005", "03016"}; 
 	private static String province[][] = {{"anhui", "34"}, {"beijing", "11"}, {"chongqing", "50"}, {"fujian", "35"}, {"gansu", "62"}, {"guangdong", "44"}, {"guangxi", "45"}, {"guizhou", "52"}, {"hainan", "46"}, {"hebei", "13"}, {"heilongjiang", "23"}, {"henan", "41"}, {"hubei", "42"}, {"hunan", "43"}, {"jiangsu", "32"}, {"jiangxi", "36"}, {"jilin", "22"}, {"liaoning", "21"}, {"neimenggu", "15"}, {"ningxia", "64"}, {"qinghai", "63"}, {"shandong", "37"}, {"shang3xi", "61"}, {"shanghai", "31"}, {"shanxi", "14"}, {"sichuan", "51"}, {"tianjin", "12"}, {"xinjiang", "65"}, {"xizang", "54"}, {"yunnan", "53"}, {"zhejiang", "33"}};
-	
 	private List<Properties> Files = new ArrayList<Properties>();
+	private List<Properties> GetFile = new ArrayList<Properties>();
 	
 	private SystemGlobals(){}
 	
@@ -30,6 +29,12 @@ public class SystemGlobals implements VariableStore {
 				a.setProperty(province[j][1], "0");
 			}
 			globals.Files.add(a);
+			
+			Properties b = new Properties();
+			for(int j = 0; j<= province.length - 1; j++){
+				b.setProperty(province[j][1], "0");
+			}
+			globals.GetFile.add(b);
 		}
 		
 		globals.setKeywords();
@@ -63,12 +68,21 @@ public class SystemGlobals implements VariableStore {
 		globals.fileLength = 0;
 	}
 	
-	public static void setProvince(int index, String provice, String fileLength){
+	public static void setProvinceFile(int index, String provice, String fileLength){
 		globals.Files.get(index).setProperty(provice, fileLength);
 	}
 
-	public static String getProvince(int index, String province){
+	public static String getProvinceFile(int index, String province){
 		return globals.Files.get(index).getProperty(province);
+	}
+	
+	
+	public static void setProvinceGetFile(int index, String provice, String value){
+		globals.GetFile.get(index).setProperty(provice, value);
+	}
+
+	public static String getProvinceGetFile(int index, String province){
+		return globals.GetFile.get(index).getProperty(province);
 	}
 	
 	@Override

@@ -1,14 +1,11 @@
 package com.ron.weixin.ftp;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
 
+import com.ron.weixin.pereference.Util;
 import com.ron.weixin.pereference.SystemGlobals;
 
 public class FtpThread implements Runnable {
@@ -39,36 +36,13 @@ public class FtpThread implements Runnable {
         SimpleDateFormat df=new SimpleDateFormat("yyyyMMdd");   
        
        // FtpDownloadClienter ftp = new FtpDownloadClienter( ftpIp, ftpPort, ftpUser, ftpPasswd);
-        String remoteFolderPath = "/home/" + province[x][0] + "/" +  df.format(d);
+        String remoteFolderPath = "/home/" + province[x][0];
         for(int i=0; i <= interfaceCode.length - 1; i++){
 	        String remoteFileName = interfaceCode[i] + "_" + province[x][1] + "_" +df.format(d)+".dat";    
 	        ftp.download(i, remoteFolderPath, remoteFileName, "d:\\Temp");
 	        SystemGlobals.resetFileLength();
 	        log.debug(x + ":" + remoteFolderPath + " : " + remoteFileName);
-	        
-	        File file = new File("d:\\temp\\" + remoteFileName);
-	        BufferedReader reader = null; 
-	        try { 
-	        	reader = new BufferedReader(new FileReader(file)); 
-	        	String tempString = null; 
-		        while ((tempString = reader.readLine()) != null){ 
-		     //   	log.info(tempString);
-		        	if(SystemGlobals.searchKeywords(tempString.substring(2, 15))>0){
-		        		log.info("find: " + tempString);
-		        	};
-		        } 
-		        reader.close(); 
-		    } catch (IOException e) { 
-	        	e.printStackTrace(); 
-		    } finally { 
-	        	if (reader != null){ 
-			        try { 
-			        	reader.close(); 
-			        } catch (IOException e) { 
-			        } 
-	        	} 
-	        } 
-	        
+	        Util.SearchFileByName(remoteFileName);
         }
         
         x++;

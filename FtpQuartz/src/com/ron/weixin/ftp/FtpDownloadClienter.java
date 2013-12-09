@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.ron.weixin.pereference.SystemGlobals;
+import com.ron.weixin.pereference.Util;
 
 import  it.sauronsoftware.ftp4j.*;
 
@@ -55,32 +56,55 @@ public class FtpDownloadClienter{
     
     public  void download(int i, String remoteFolderPath, String remoteFileName, String localFolderPath) {
         String tmpRFN[] = remoteFileName.split("_|\\.");
-        log.debug("已下载: " + SystemGlobals.getProvince(i, tmpRFN[1]));
+        log.debug("已下载: " + SystemGlobals.getProvinceFile(i, tmpRFN[1]));
         
-        Date d=new Date();   
-        SimpleDateFormat dfH=new SimpleDateFormat("yyyyMMddHH");   
+        Date d=new Date(); 
+        SimpleDateFormat dfH = new SimpleDateFormat("HH");   
+        SimpleDateFormat dfm = new SimpleDateFormat("mm");   
         
         try {
-            client.changeDirectory(remoteFolderPath);
-            
-        	List<String> fileNames = listFiles(".");
-            String[] tempFileNames = new String[fileNames.size()];
-            fileNames.toArray(tempFileNames);
-            Arrays.sort(tempFileNames);
-            if(Arrays.binarySearch(tempFileNames, tmpRFN[0] + "_" + tmpRFN[1] + "_" + dfH.format(new Date(d.getTime() + 1000 * 60 * 60)) + ".dat")>0){
-            	int timeswitch = 0;
-            	timeswitch++;
+           	client.changeDirectory(remoteFolderPath + "/" + tmpRFN[2]);
+           	
+            if(dfm.format(d).equals("44")){
+            	SystemGlobals.setProvinceGetFile(i, tmpRFN[1], "1");
             }
-            log.debug("NEXT: " + tmpRFN[0] + "_" + tmpRFN[1] + "_" + dfH.format(new Date(d.getTime() + 1000 * 60 * 60)) + ".dat");
+            
+            log.debug(SystemGlobals.getProvinceGetFile(i, tmpRFN[1]));
+            int start = Integer.parseInt(SystemGlobals.getProvinceFile(i, tmpRFN[1]));
+            if("1".equals(SystemGlobals.getProvinceGetFile(i, tmpRFN[1]))){
+            	String HH = Util.TimeRound(dfH.format(d), dfm.format(d));            			
+            	String ArchiveFile = tmpRFN[0] + "_" + tmpRFN[1] + "_" + tmpRFN[2] + HH + ".dat";
+            	
+	        	List<String> fileNames = listFiles(".");
+	            String[] tempFileNames = new String[fileNames.size()];
+	            fileNames.toArray(tempFileNames);
+	            Arrays.sort(tempFileNames);
+            	
+	            if(Arrays.binarySearch(tempFileNames, ArchiveFile) >= 0){
+	            	log.info("已检查, 切换了!");
+		            client.download(ArchiveFile, new File( localFolderPath + File.separator + new File(remoteFileName).getName()), start, new MyTransferListener());
+	            	File f =  new File("d:\\temp" + File.separator + remoteFileName);
+	            	f.renameTo(new File("d:\\temp" + File.separator + ArchiveFile));
+		            SystemGlobals.setProvinceFile(i, tmpRFN[1], "0");
+	            	SystemGlobals.setProvinceGetFile(i, tmpRFN[1], "0");
+	            }else{
+	            	log.info("已检查,未切换!");
+		            client.download(remoteFileName, new File( localFolderPath + File.separator + new File(remoteFileName).getName()), start, new MyTransferListener());
+		            SystemGlobals.setProvinceFile(i, tmpRFN[1], Integer.toString((SystemGlobals.getFileLength() + start)));
+	            }
+	        }else{
+            	log.info("不需检查!");
+		        client.download(remoteFileName, new File( localFolderPath + File.separator + new File(remoteFileName).getName()), start, new MyTransferListener());
+		        SystemGlobals.setProvinceFile(i, tmpRFN[1], Integer.toString((SystemGlobals.getFileLength() + start)));
+	        }
+            
             
             File file = new File("d:\\temp\\" + remoteFileName);
             if(file.exists()){
-            	log.debug(remoteFolderPath + "/" + remoteFileName +": " + client.fileSize(remoteFolderPath + "/" + remoteFileName));
+            	log.debug(remoteFolderPath + "/" + tmpRFN[2] + "/" + remoteFileName +": " + client.fileSize(remoteFolderPath + "/" + tmpRFN[2] + "/" + remoteFileName));
   //          	file.delete();
             }
-            int start = Integer.parseInt(SystemGlobals.getProvince(i, tmpRFN[1]));
-            client.download(remoteFileName, new File( localFolderPath + File.separator + new File(remoteFileName).getName()), start, new MyTransferListener());
-            SystemGlobals.setProvince(i, tmpRFN[1], Integer.toString((SystemGlobals.getFileLength() + start)));
+            
         } catch (FTPException e) {
             e.printStackTrace();
         	if(e.getCode() == 550){
@@ -89,7 +113,7 @@ public class FtpDownloadClienter{
         } catch (Exception e) {
             e.printStackTrace();
         } finally{
-        	log.info("Downloaded: " + remoteFolderPath + "/" + remoteFileName);
+        	log.info("Downloaded: " + remoteFolderPath + "/" + tmpRFN[2] + "/" + remoteFileName);
         }
     }
     

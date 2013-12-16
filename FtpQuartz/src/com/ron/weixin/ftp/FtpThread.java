@@ -41,7 +41,7 @@ public class FtpThread implements Runnable {
 	        String remoteFileName = interfaceCode[i] + "_" + province[x][1] + "_" +df.format(d)+".dat";    
 	        ftp.download(i, remoteFolderPath, remoteFileName, "d:\\Temp");
 	        SystemGlobals.resetFileLength();
-	        log.debug(x + ":" + remoteFolderPath + " : " + remoteFileName);
+//	        log.debug(x + ":" + remoteFolderPath + " : " + remoteFileName);
 	        Util.SearchFileByName(remoteFileName);
         }
         

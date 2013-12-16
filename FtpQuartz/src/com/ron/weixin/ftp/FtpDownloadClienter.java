@@ -64,12 +64,13 @@ public class FtpDownloadClienter{
         
         try {
            	client.changeDirectory(remoteFolderPath + "/" + tmpRFN[2]);
+           	log.info(remoteFolderPath + "/" + tmpRFN[2]);
            	
             if(dfm.format(d).equals("44")){
             	SystemGlobals.setProvinceGetFile(i, tmpRFN[1], "1");
             }
             
-            log.debug(SystemGlobals.getProvinceGetFile(i, tmpRFN[1]));
+//            log.debug(SystemGlobals.getProvinceGetFile(i, tmpRFN[1]));
             int start = Integer.parseInt(SystemGlobals.getProvinceFile(i, tmpRFN[1]));
             if("1".equals(SystemGlobals.getProvinceGetFile(i, tmpRFN[1]))){
             	String HH = Util.TimeRound(dfH.format(d), dfm.format(d));            			

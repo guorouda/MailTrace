@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.dom4j.DocumentException;
+
 public class Weixin extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -15,8 +17,16 @@ public class Weixin extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
-    	WeixinHandler handler=new WeixinHandler(req, resp);  
-	    handler.valid();
+    	WeixinHandler handler;
+		try {
+			handler = new WeixinHandler(req, resp);
+			handler.valid();
+//			handler.responseMsgOne("The one!!");
+//			handler.responseMsgOne("The two!!");
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
 	}
 
 	@Override

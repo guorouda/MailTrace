@@ -3,6 +3,7 @@ package com.ron.weixin;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Date;
@@ -13,28 +14,73 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
+import com.ron.weixin.pereference.SystemGlobals;
 
 public class WeixinHandler {
 	private static Logger log = Logger.getLogger(WeixinHandler.class);
 	
 	private String TOKEN = "Guo";
+	private String mailToken = "#dqG542Sdg";
+	
+	private String fromUsername = null;
+	private String toUsername = null;
+	private String RX_TYPE = null;
+	private String keyword = null;
+	
+	
+	private String postStr = null;
+	private Element root = null;
+	
 	private HttpServletRequest request; 
 	private HttpServletResponse response;
 	
-	public WeixinHandler(HttpServletRequest request, HttpServletResponse response) {
+	public WeixinHandler(HttpServletRequest request, HttpServletResponse response) throws IOException, DocumentException {
 		super();
-		this.request = request;
+		this.postStr = this.readStreamParameter(request.getInputStream());
+		if(this.postStr == null || this.postStr.isEmpty() ){
+			this.request = request;
+		}else{
+			Document document = null;
+			document = DocumentHelper.parseText(this.postStr);
+			
+			if(null == document){
+				this.print("");
+				return;
+			}
+			
+			this.root = document.getRootElement();
+			this.RX_TYPE = root.elementText("MsgType");
+			this.fromUsername = root.elementText("FromUserName");
+			this.toUsername = root.elementText("ToUserName");
+			this.keyword = root.elementText("Content");
+			
+			log.info(this.postStr);
+			log.info(this.RX_TYPE);
+		}
+		
 		this.response = response;
 	}
 	
-	public void valid(){
+	public void valid() throws UnsupportedEncodingException{
 		log.debug("Weixin starting...");
-		String echostr = request.getParameter("echostr");
-		if(null == echostr||echostr.isEmpty()){
-			responseMsg();
+		if (null != this.postStr && !this.postStr.isEmpty()){
+			switch(this.RX_TYPE){
+				case "text":
+					SystemGlobals.setKeywords(this.keyword);
+					responseMsg(this.fromUsername, this.toUsername, this.toUsername + ":" + this.keyword + new String(" 加入跟踪.".getBytes("UTF-8"), "ISO-8859-1"));
+					break;
+				case "event":
+					if(this.root.elementText("Event").equals("subscribe")){
+						replySubscribe();
+					}
+					break;
+			}
 		}else{
+			String echostr = request.getParameter("echostr");
 			if(this.checkSignature()){
 				this.print(echostr);
 			}else{
@@ -43,56 +89,45 @@ public class WeixinHandler {
 		}
 	}
 	
-	//自动回复内容
-	public void responseMsg(){
-		String postStr = null;
-		try{
-			postStr = this.readStreamParameter(request.getInputStream());
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+	//subscribe自动回复内容
+	public void replySubscribe() throws UnsupportedEncodingException{
+	    String time = new Date().getTime() + "";
+	    String textTpl = "<xml>" +
+			"<ToUserName><![CDATA[%1$s]]></ToUserName>" +
+			"<FromUserName><![CDATA[%2$s]]></FromUserName>" +
+			"<CreateTime>%3$s</CreateTime>" +
+			"<MsgType><![CDATA[%4$s]]></MsgType>" +
+			"<Content><![CDATA[%5$s]]></Content>" +
+			"<FuncFlag>0</FuncFlag>" +
+			"</xml>";             
 		
-		log.debug(postStr);
-		if (null != postStr && !postStr.isEmpty()){
-			Document document = null;
-			try{
-				document = DocumentHelper.parseText(postStr);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-			
-			if(null == document){
-				this.print("");
-				return;
-			}
-			
-			Element root = document.getRootElement();
-            String fromUsername = root.elementText("FromUserName");
-            String toUsername = root.elementText("ToUserName");
-            String keyword = root.elementTextTrim("Content");
-            String time = new Date().getTime() + "";
-            String textTpl = "<xml>" +
-						"<ToUserName><![CDATA[%1$s]]></ToUserName>" +
-						"<FromUserName><![CDATA[%2$s]]></FromUserName>" +
-						"<CreateTime>%3$s</CreateTime>" +
-						"<MsgType><![CDATA[%4$s]]></MsgType>" +
-						"<Content><![CDATA[%5$s]]></Content>" +
-						"<FuncFlag>0</FuncFlag>" +
-						"</xml>";             
-			
-			if(null != keyword && !keyword.equals(""))
-            {
-          		String msgType = "text";
-            	String contentStr = "Welcome to wechat world!";
-            	String resultStr = String.format(textTpl, fromUsername, toUsername, time, msgType, contentStr);
-            	this.print(resultStr);
-            }else{
-            	this.print("Input something...");
-            }
+       	String msgType = "text";
+       	String contentStr = "南京邮政速递物流公司欢迎您，请输入邮件号进行查询！";
+       	String resultStr = String.format(textTpl, fromUsername, toUsername, time, msgType, new String(contentStr.getBytes("UTF-8"), "ISO-8859-1"));
+       	this.print(resultStr);
 
-	    }else {
-	    	this.print("");
-	    }
+	}
+	
+	public void responseMsgOne(String contentStr){
+		this.responseMsg(fromUsername, toUsername, contentStr);
+	}
+	
+	//自动回复内容
+	private void responseMsg(String fromUsername, String toUsername, String contentStr){
+	    String time = new Date().getTime() + "";
+	    String textTpl = "<xml>" +
+			"<ToUserName><![CDATA[%1$s]]></ToUserName>" +
+			"<FromUserName><![CDATA[%2$s]]></FromUserName>" +
+			"<CreateTime>%3$s</CreateTime>" +
+			"<MsgType><![CDATA[%4$s]]></MsgType>" +
+			"<Content><![CDATA[%5$s]]></Content>" +
+			"<FuncFlag>0</FuncFlag>" +
+			"</xml>";             
+	
+       	String msgType = "text";
+       	String resultStr = String.format(textTpl, fromUsername, toUsername, time, msgType, contentStr);
+       	this.print(resultStr);
+
 	}
 	
 	//微信接口验证
@@ -100,6 +135,11 @@ public class WeixinHandler {
 		String signature = request.getParameter("signature");
         String timestamp = request.getParameter("timestamp");
         String nonce = request.getParameter("nonce");
+        if(signature == null || timestamp == null || nonce == null){
+        	return false;
+        }
+        log.debug(signature + "|" + timestamp + "|" + nonce);
+        
         String token = TOKEN;
         String[] tmpArr = {token, timestamp, nonce};
         Arrays.sort(tmpArr);

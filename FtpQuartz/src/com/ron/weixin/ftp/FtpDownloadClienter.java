@@ -10,7 +10,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.ron.weixin.pereference.SystemGlobals;
-import com.ron.weixin.pereference.Util;
 
 import  it.sauronsoftware.ftp4j.*;
 
@@ -54,38 +53,37 @@ public class FtpDownloadClienter{
         return true;
     }
     
-    public  void download(int i, String remoteFolderPath, String remoteFileName, String localFolderPath) {
+    public  void download(int i, String remoteFolderPath, String remoteFileName, String localFolderPath, String Hour, String minute) {
         String tmpRFN[] = remoteFileName.split("_|\\.");
         log.debug("已下载: " + SystemGlobals.getProvinceFile(i, tmpRFN[1]));
-        
-        Date d=new Date(); 
-        SimpleDateFormat dfH = new SimpleDateFormat("HH");   
-        SimpleDateFormat dfm = new SimpleDateFormat("mm");   
         
         try {
            	client.changeDirectory(remoteFolderPath + "/" + tmpRFN[2]);
            	log.info(remoteFolderPath + "/" + tmpRFN[2]);
            	
-            if(dfm.format(d).equals("44")){
+            if(Integer.parseInt(minute) == 45){
             	SystemGlobals.setProvinceGetFile(i, tmpRFN[1], "1");
             }
             
-//            log.debug(SystemGlobals.getProvinceGetFile(i, tmpRFN[1]));
             int start = Integer.parseInt(SystemGlobals.getProvinceFile(i, tmpRFN[1]));
+            SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmm");
+            SimpleDateFormat dfH = new SimpleDateFormat("yyyyMMddHH");
+            Date d = df.parse(tmpRFN[2] + Hour + minute);
+            String ArchiveFileHH = dfH.format(d.getTime() + 30 * 60 * 1000);
             if("1".equals(SystemGlobals.getProvinceGetFile(i, tmpRFN[1]))){
-            	String HH = Util.TimeRound(dfH.format(d), dfm.format(d));            			
-            	String ArchiveFile = tmpRFN[0] + "_" + tmpRFN[1] + "_" + tmpRFN[2] + HH + ".dat";
+            	String ArchiveFile = tmpRFN[0] + "_" + tmpRFN[1] + "_" + ArchiveFileHH + ".dat";
             	
 	        	List<String> fileNames = listFiles(".");
 	            String[] tempFileNames = new String[fileNames.size()];
 	            fileNames.toArray(tempFileNames);
 	            Arrays.sort(tempFileNames);
             	
+	            //TODO 在下载的文件中，寻找快件号码
 	            if(Arrays.binarySearch(tempFileNames, ArchiveFile) >= 0){
 	            	log.info("已检查, 切换了!");
 		            client.download(ArchiveFile, new File( localFolderPath + File.separator + new File(remoteFileName).getName()), start, new MyTransferListener());
-	            	File f =  new File("d:\\temp" + File.separator + remoteFileName);
-	            	f.renameTo(new File("d:\\temp" + File.separator + ArchiveFile));
+	            	File f =  new File(localFolderPath + File.separator + remoteFileName);
+	            	f.renameTo(new File(localFolderPath + File.separator + ArchiveFile));
 		            SystemGlobals.setProvinceFile(i, tmpRFN[1], "0");
 	            	SystemGlobals.setProvinceGetFile(i, tmpRFN[1], "0");
 	            }else{
@@ -100,7 +98,7 @@ public class FtpDownloadClienter{
 	        }
             
             
-            File file = new File("d:\\temp\\" + remoteFileName);
+            File file = new File(localFolderPath + File.separator + remoteFileName);
             if(file.exists()){
             	log.debug(remoteFolderPath + "/" + tmpRFN[2] + "/" + remoteFileName +": " + client.fileSize(remoteFolderPath + "/" + tmpRFN[2] + "/" + remoteFileName));
   //          	file.delete();

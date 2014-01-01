@@ -28,7 +28,7 @@ public class FtpJob implements Job {
 		try{
 			myFtp.ftp.openConnection();
 			FtpThread ftpThread = new FtpThread(myFtp.ftp);
-			for(int i = 0; i <= 0; i++){
+			for(int i = 0; i <= 1; i++){
 				Thread t = new Thread(ftpThread);
 				t.start();
 			}

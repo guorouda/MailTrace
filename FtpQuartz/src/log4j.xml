@@ -5,7 +5,7 @@
     <appender name="Console" class="org.apache.log4j.ConsoleAppender">
         <param name="threshold" value="debug"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d %-5p (%c.java:%L).%M - %m%n"/>
+            <param name="ConversionPattern" value="%t - %d %-5p (%c.java:%L).%M - %m%n"/>
         </layout>
     </appender>
     

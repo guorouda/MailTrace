@@ -17,16 +17,7 @@ public class FtpThread implements Runnable {
 	private static Logger log = Logger.getLogger(FtpThread.class);
 	private int x = 0;
 	
-//	private String ftpIp = "192.168.202.13";       
-//	private int ftpPort = 21;
-//	private String ftpUser = "jiangsu";
-//	private String ftpPasswd = "password";
-	
-//  interfaceCode 必须和con.ron.weixin.preference.SystemGlobals 中的完全相同
-	private String interfaceCode[] = {"03003", "03004", "03005", "03016"};
-//	private String province[][] = {{"anhui", "34"}, {"beijing", "11"}, {"chongqing", "50"}, {"fujian", "35"}, {"gansu", "62"}, {"guangdong", "44"}, {"guangxi", "45"}, {"guizhou", "52"}, {"hainan", "46"}, {"hebei", "13"}, {"heilongjiang", "23"}, {"henan", "41"}, {"hubei", "42"}, {"hunan", "43"}, {"jiangsu", "32"}, {"jiangxi", "36"}, {"jilin", "22"}, {"liaoning", "21"}, {"neimenggu", "15"}, {"ningxia", "64"}, {"qinghai", "63"}, {"shandong", "37"}, {"shang3xi", "61"}, {"shanghai", "31"}, {"shanxi", "14"}, {"sichuan", "51"}, {"tianjin", "12"}, {"xinjiang", "65"}, {"xizang", "54"}, {"yunnan", "53"}, {"zhejiang", "33"}};
-//	private String province[][] = {{"beijing", "11"}, {"jiangsu", "32"}};
-	private String province[][] = {{"jiangsu", "32"}};
+//	private String provincefiletype[][] = {{"anhui", "0"}, {"beijing", "0"}, {"chongqing", "0"}, {"fujian", "1"}, {"gansu", "0"}, {"guangdong", "1"}, {"guangxi", "0"}, {"guizhou", "0"}, {"hainan", "0"}, {"hebei", "0"}, {"heilongjiang", "0"}, {"henan", "0"}, {"hubei", "0"}, {"hunan", "0"}, {"jiangsu", "1"}, {"jiangxi", "0"}, {"jilin", "0"}, {"liaoning", "0"}, {"neimenggu", "0"}, {"ningxia", "0"}, {"qinghai", "0"}, {"shandong", "0"}, {"shang3xi", "0"}, {"shanghai", "0"}, {"shanxi", "0"}, {"sichuan", "0"}, {"tianjin", "0"}, {"xinjiang", "0"}, {"xizang", "1"}, {"yunnan", "0"}, {"zhejiang", "0"}};
 	
 	private FtpDownloadClienter ftp;
 
@@ -43,22 +34,26 @@ public class FtpThread implements Runnable {
         SimpleDateFormat dfH=new SimpleDateFormat("HH");   
         SimpleDateFormat dfm=new SimpleDateFormat("mm");   
        
-       // FtpDownloadClienter ftp = new FtpDownloadClienter( ftpIp, ftpPort, ftpUser, ftpPasswd);
-        String remoteFolderPath = "/home/" + province[x][0];
-        for(int i=0; i <= interfaceCode.length - 1; i++){
+        String[] filecodes = SystemGlobals.getDefaultsValue("file.code").split(",");
+        String[] provincecodes = SystemGlobals.getDefaultsValue("province.code").split(",");
+        String[] provincecode = provincecodes[x].split(":");
+        
+        String remoteFolderPath = "/home/" + provincecode[0].trim();
+        for(int i=0; i <= filecodes.length - 1; i++){
+        	log.info( filecodes.length + ":" + "filecode:" + filecodes[i]);
 	        String remoteFileName = null;    
-           	log.info(dfH.format(d) + ":" +  SystemGlobals.getDaySwitch(i, province[x][1]));
-           	if((Integer.parseInt(dfH.format(d)) - Integer.parseInt(SystemGlobals.getDaySwitch(i, province[x][1])) < 0)){
-			       remoteFileName = interfaceCode[i] + "_" + province[x][1] + "_" + df.format(d.getTime() - 24 * 60 * 60 * 1000) + ".dat";    
-			       ftp.download(i, remoteFolderPath, remoteFileName, "d:\\Temp", dfH.format(d.getTime() - 24 * 60 * 1000), dfm.format(d.getTime() - 24 * 60 * 1000));
-			       SystemGlobals.setProvinceFile(i, province[x][1], "0");
+           	log.info(dfH.format(d) + ":" +  SystemGlobals.getDaySwitch(filecodes[i], provincecode[1].trim()));
+           	if((Integer.parseInt(dfH.format(d)) - Integer.parseInt(SystemGlobals.getDaySwitch(filecodes[i], provincecode[1])) < 0)){
+			       remoteFileName = filecodes[i].trim() + "_" + provincecode[1] + "_" + df.format(d.getTime() - 24 * 60 * 60 * 1000) + ".dat";    
+			       ftp.download(remoteFolderPath, remoteFileName, SystemGlobals.getDefaultsValue("download.path"), dfH.format(d.getTime() - 24 * 60 * 1000), dfm.format(d.getTime() - 24 * 60 * 1000));
+			       SystemGlobals.setProvinceFile(filecodes[i], provincecode[1], "0");
             }
-	        remoteFileName = interfaceCode[i] + "_" + province[x][1] + "_" +df.format(d)+".dat";    
-	        ftp.download(i, remoteFolderPath, remoteFileName, "d:\\Temp", dfH.format(d), dfm.format(d));
-  	        SystemGlobals.setDaySwitch(i,  province[x][1] , dfH.format(d));
+	        remoteFileName = filecodes[i].trim() + "_" + provincecode[1] + "_" +df.format(d)+".dat";    
+	        ftp.download(remoteFolderPath, remoteFileName, SystemGlobals.getDefaultsValue("download.path"), dfH.format(d), dfm.format(d));
+  	        SystemGlobals.setDaySwitch(filecodes[i],  provincecode[1] , dfH.format(d));
 	        SystemGlobals.resetFileLength();
 //	        log.debug(x + ":" + remoteFolderPath + " : " + remoteFileName);
-	        String content = Util.SearchFileByName(i, remoteFileName);
+	        String content = Util.SearchFileByName(remoteFileName);
 			if(  content != null){
 				LoginWeixinWEB lww = new LoginWeixinWEB();
 				try {

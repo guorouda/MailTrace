@@ -132,6 +132,7 @@ public class LoginWeixinWEB {
         
 		CloseableHttpResponse response = httpclient.execute(httppost);
 		HttpEntity entity = response.getEntity();
+		log.info(EntityUtils.toString(entity));
 		
 		return false;
 	}

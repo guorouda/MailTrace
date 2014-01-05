@@ -1,52 +1,111 @@
 package com.ron.weixin.pereference;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.log4j.Logger;
 
 
 public class SystemGlobals implements VariableStore {
 	private static SystemGlobals globals = new SystemGlobals();
 	
-	private int fileLength = 0;
-	List<String> tempKeywords = new ArrayList<String>();
+	private String defaultConfig;
+	private Properties defaults = new Properties();
 	
-	private static String[] interfaceCode = {"03003", "03004", "03005", "03016"}; 
-	private static String province[][] = {{"anhui", "34"}, {"beijing", "11"}, {"chongqing", "50"}, {"fujian", "35"}, {"gansu", "62"}, {"guangdong", "44"}, {"guangxi", "45"}, {"guizhou", "52"}, {"hainan", "46"}, {"hebei", "13"}, {"heilongjiang", "23"}, {"henan", "41"}, {"hubei", "42"}, {"hunan", "43"}, {"jiangsu", "32"}, {"jiangxi", "36"}, {"jilin", "22"}, {"liaoning", "21"}, {"neimenggu", "15"}, {"ningxia", "64"}, {"qinghai", "63"}, {"shandong", "37"}, {"shang3xi", "61"}, {"shanghai", "31"}, {"shanxi", "14"}, {"sichuan", "51"}, {"tianjin", "12"}, {"xinjiang", "65"}, {"xizang", "54"}, {"yunnan", "53"}, {"zhejiang", "33"}};
-	private List<Properties> Files = new ArrayList<Properties>();
-	private List<Properties> GetFile = new ArrayList<Properties>();
-	private List<Properties> DaySwitch = new ArrayList<Properties>();
+	private int fileLength = 0;
+	private List<String> tempKeywords = new ArrayList<String>();
+	
+	private Map<String, Properties> FilesMap = new HashMap<String, Properties>();
+	private Map<String, Properties> GetFilesMap = new HashMap<String, Properties>();
+	private Map<String, Properties> DaySwitchMap = new HashMap<String, Properties>();
+	
+	private CloseableHttpClient Weixinhttpclient = null;
+	private CloseableHttpClient Emshttpclient = null;
+	
+	public static Logger log = Logger.getLogger(SystemGlobals.class);
 	
 	private SystemGlobals(){}
 	
-	public static void initGlobals(){
+	public static void initGlobals(String appPath, String mainConfigurationFile){
 		globals = new SystemGlobals();
 		
-		for(int i=0; i <= interfaceCode.length - 1; i++){
+		globals.defaultConfig = mainConfigurationFile;
+		globals.defaults = new Properties();
+		
+		globals.defaults.put(ConfigKeys.APPLICATION_PATH, appPath);
+		globals.defaults.put(ConfigKeys.DEFAULT_CONFIG, mainConfigurationFile);
+		
+		SystemGlobals.loadDefaults();
+		
+		CookieStore WeixincookieStore = new BasicCookieStore();
+		RequestConfig WeixinrequestConfig = RequestConfig.custom()
+				.setCookieSpec(CookieSpecs.BROWSER_COMPATIBILITY)
+				.build();
+		globals.Weixinhttpclient = HttpClients
+				.custom()
+				.setUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0")				
+				.setDefaultRequestConfig(WeixinrequestConfig)
+				.setDefaultCookieStore(WeixincookieStore)
+				.build();
+		
+		CookieStore EmscookieStore = new BasicCookieStore();
+		RequestConfig EmsrequestConfig = RequestConfig.custom()
+				.setCookieSpec(CookieSpecs.BROWSER_COMPATIBILITY)
+				.build();
+		globals.Emshttpclient = HttpClients
+				.custom()
+				.setUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0")				
+				.setDefaultRequestConfig(EmsrequestConfig)
+				.setDefaultCookieStore(EmscookieStore)
+				.build();
+		
+		String[] s = SystemGlobals.getDefaultsValue("file.code").split(",");
+		String[] p = SystemGlobals.getDefaultsValue("province.code").split(",");
+		
+		for(int i=0; i <= s.length - 1; i++){
 			Properties a = new Properties();
-			for(int j = 0; j<= province.length - 1; j++){
-				a.setProperty(province[j][1], "0");
+			for(int j = 0; j <= p.length -1; j++){
+				a.setProperty(p[j].split(":")[1].trim(), "0");
 			}
-			globals.Files.add(a);
+			globals.FilesMap.put(s[i].trim(), a);
 			
 			Properties b = new Properties();
-			for(int j = 0; j<= province.length - 1; j++){
-				b.setProperty(province[j][1], "0");
+			for(int j = 0; j <= p.length -1; j++){
+				b.setProperty(p[j].split(":")[1].trim(), "0");
 			}
-			globals.GetFile.add(b);
+			globals.GetFilesMap.put(s[i].trim(), b);
 			
 			Properties c = new Properties();
-			for(int j = 0; j<= province.length - 1; j++){
-				c.setProperty(province[j][1], "0");
+			for(int j = 0; j <= p.length -1; j++){
+				c.setProperty(p[j].split(":")[1].trim(), "0");
 			}
-			globals.DaySwitch.add(c);
-			
+			globals.DaySwitchMap.put(s[i].trim(), c);
 		}
 		
-		globals.tempKeywords.add("1153213584700");
-		Collections.sort(globals.tempKeywords);
+	}
+	
+	public static void print(){
+		Iterator<Map.Entry<String, Properties>> iter = globals.DaySwitchMap.entrySet().iterator(); 
+		while (iter.hasNext()) { 
+			Map.Entry<String, Properties> entry = (Map.Entry<String, Properties>)iter.next(); 
+			Object key = entry.getKey(); 
+			Object val = entry.getValue(); 
+			log.info(key);
+			log.info(val.toString());
+		} 
 	}
 	
 	public static void setKeywords(String keyword){
@@ -67,7 +126,6 @@ public class SystemGlobals implements VariableStore {
 		return keywords;
 	}
 	
-	
 	public static void setFileLength(int fileLength){
 		globals.fileLength = fileLength;
 	}
@@ -80,29 +138,52 @@ public class SystemGlobals implements VariableStore {
 		globals.fileLength = 0;
 	}
 	
-	public static void setProvinceFile(int index, String provice, String fileLength){
-		globals.Files.get(index).setProperty(provice, fileLength);
+	public static void setProvinceFile(String key, String provice, String fileLength){
+//		globals.Files.get(index).setProperty(provice, fileLength);
+		globals.GetFilesMap.get(key).setProperty(provice, fileLength);
 	}
 
-	public static String getProvinceFile(int index, String province){
-		return globals.Files.get(index).getProperty(province);
+	public static String getProvinceFile(String key, String province){
+		return globals.FilesMap.get(key).getProperty(province);
 	}
 	
-	
-	public static void setProvinceGetFile(int index, String provice, String value){
-		globals.GetFile.get(index).setProperty(provice, value);
+	public static void setProvinceGetFile(String key, String provice, String value){
+		globals.GetFilesMap.get(key).setProperty(provice, value);
 	}
 
-	public static String getProvinceGetFile(int index, String province){
-		return globals.GetFile.get(index).getProperty(province);
+	public static String getProvinceGetFile(String key, String province){
+		return globals.GetFilesMap.get(key).getProperty(province);
 	}
 	
-	public static void setDaySwitch(int index, String provice, String value){
-		globals.DaySwitch.get(index).setProperty(provice, value);
+	public static void setDaySwitch(String key, String provice, String value){
+		globals.DaySwitchMap.get(key).setProperty(provice, value);
 	}
 
-	public static String getDaySwitch(int index, String province){
-		return globals.DaySwitch.get(index).getProperty(province);
+	public static String getDaySwitch(String key, String province){
+		log.info(key + ":" + province);
+		return globals.DaySwitchMap.get(key).getProperty(province);
+	}
+	
+	public static CloseableHttpClient getEmsHttpclient(){
+		return globals.Emshttpclient;
+	}
+	
+	public static void loadDefaults() {
+		try {
+			FileInputStream input = new FileInputStream(globals.defaultConfig);
+			globals.defaults.load(input);
+			input.close();
+		} catch (IOException e) {
+		}
+	}
+	
+	public static String getDefaultsValue(String variableName){
+		return globals.defaults.getProperty(variableName);
+	}
+	
+	// TODO
+	public static String getValue(String variableName){
+		return SystemGlobals.getValue(variableName);
 	}
 	
 	@Override

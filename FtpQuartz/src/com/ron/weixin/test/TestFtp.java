@@ -1,10 +1,12 @@
-package com.ron.weixin.ftp;
+package com.ron.weixin.test;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.ron.weixin.ftp.FtpDownloadClienter;
 
 
 public class TestFtp {
@@ -33,7 +35,7 @@ public class TestFtp {
 		        String remoteFolderPath = "/home/" + province[x][0] + "/" +  df.format(d);
 		        String remoteFileName = interfaceCode[0] + "_" + province[x][1] + "_" + df.format(d) + ".dat";    
 		        
-		        ftp.download(0, remoteFolderPath, remoteFileName, "d:\\Temp", "", "");
+		        ftp.download(remoteFolderPath, remoteFileName, "d:\\Temp", "", "");
 		        
 		        ++x;
 		        log.debug(Thread.currentThread().getName()+ "$" + x + ":" + remoteFolderPath + " : " + remoteFileName);

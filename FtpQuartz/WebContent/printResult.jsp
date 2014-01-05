@@ -1,6 +1,16 @@
-<%@ page language="java" contentType="text/html; charset=utf-8"
-    pageEncoding="utf-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@page import="com.ron.weixin.pereference.SystemGlobals, com.ron.ems.Ems83, net.sf.json.JSONObject"%>
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%
+if(request.getParameter("mailnum") == null){
+	out.print("no mailnum");
+	return;
+}
+String mailnum = request.getParameter("mailnum");
+Ems83 s = new Ems83();
+//JSONObject jo = s.GetDetail("5066980369701");
+JSONObject jo = s.GetDetail(mailnum);
+%>
+	<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title>邮件详细</title>
@@ -15,15 +25,15 @@
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/> 
 	
-<link rel="stylesheet"  href="/css/jquery.mobile-1.3.2.min.css">
-<script src="/js/jquery.js"></script>
-<script src="/js/jquery.mobile-1.3.2.min.js"></script>
+<link rel="stylesheet"  href="css/jquery.mobile-1.3.2.min.css">
+<script src="js/jquery.js"></script>
+<script src="js/jquery.mobile-1.3.2.min.js"></script>
 	
-<link rel="stylesheet"  href="/css/index.css">
-<script src="/js/index.js"></script>
+<link rel="stylesheet"  href="css/index.css">
+<script src="js/index.js"></script>
 <style type="text/css">
 .status{ 
-    background-image: url(/images/sta2.png);
+    background-image: url(images/sta2.png);
     background-repeat:no-repeat;
     background-position:center;
     width:50px;
@@ -31,7 +41,7 @@
 }
 
 .status1{ 
-    background-image: url(/images/state1.png);
+    background-image: url(images/state1.png);
     background-repeat:no-repeat;
     background-position:center;
     width:50px;
@@ -39,7 +49,7 @@
 }
 
 .status2{ 
-    background-image: url(/images/state2.png);
+    background-image: url(images/state2.png);
     background-repeat:no-repeat;
     background-position:center;
     width:50px;
@@ -47,7 +57,7 @@
 }
 
 .status3{ 
-    background-image: url(/images/state3.png);
+    background-image: url(images/state3.png);
     background-repeat:no-repeat;
     background-position:center;
     width:50px;
@@ -55,7 +65,7 @@
 }
 
 .status4{ 
-    background-image: url(/images/state4.png);
+    background-image: url(images/state4.png);
     background-repeat:no-repeat;
     background-position:center;
     width:50px;
@@ -143,9 +153,24 @@
     
     <div data-role="collapsible" data-theme="b" data-content-theme="b" data-collapsed="false" >
 	<div data-role="collapsible" data-theme="b" data-content-theme="b" data-collapsed="false" >
-	
-	
-	</table>
+	<h3>邮件：<%=mailnum%></h3><p>
+	<table width="100%" border="0" cellspacing="0" cellspacing="0" class="orderListTable"><tr class="ui-bar-b"><th width="40px">时间</th><th width="40px">状态</th><th >操作</th></tr>
+	<script>
+	(function showJSON(){ 
+		var step =<%=jo%>;
+		console.debug(step);
+		for(var i=1; i < step.rows.length; i++){
+			var temp;
+			if(i%2 == 1){
+				temp = '<td class="status2" width="50px" style="background-color:#ffffff;"></td>';
+			}else{
+				temp = '<td class="status2" width="50px" style="background-color:#f4f4f4;"></td>';
+			}
+			document.write('<tr height="50px;">' + '<td class="td' + i%2 + '" align="left" style="padding-left:15px;">' + step.rows[i].time  +  '</td>' + temp + '<td class="td' + i%2 + '" align="left" style="padding-left:15px;">' + step.rows[i].action + '->' +  step.rows[i].comment + '</br>' +  step.rows[i].station  +  '</td>'  +  '</tr>');
+		}
+	})(); 
+</script>	
+</table>
 </p>
 </div>
 </div>

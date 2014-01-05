@@ -32,10 +32,11 @@ public class FtpDownloadClienter{
     }
 
     public  void openConnection()throws Exception{
+    	log.debug(ftpHost + ":" + ftpPort + ":" + ftpUser + ":" + ftpPasswd);
         client.connect(ftpHost, ftpPort);
         client.login(ftpUser, ftpPasswd);
         boolean flag =  client.isResumeSupported();
-        log.debug("flag：" + flag);
+        log.debug("isResumeSupported:" + flag);
     }
 
 
@@ -53,24 +54,24 @@ public class FtpDownloadClienter{
         return true;
     }
     
-    public  void download(int i, String remoteFolderPath, String remoteFileName, String localFolderPath, String Hour, String minute) {
+    public  void download(String remoteFolderPath, String remoteFileName, String localFolderPath, String Hour, String minute) {
         String tmpRFN[] = remoteFileName.split("_|\\.");
-        log.debug("已下载: " + SystemGlobals.getProvinceFile(i, tmpRFN[1]));
+        log.debug("已下载: " + SystemGlobals.getProvinceFile(tmpRFN[0], tmpRFN[1]));
         
         try {
            	client.changeDirectory(remoteFolderPath + "/" + tmpRFN[2]);
            	log.info(remoteFolderPath + "/" + tmpRFN[2]);
            	
-            if(Integer.parseInt(minute) == 45){
-            	SystemGlobals.setProvinceGetFile(i, tmpRFN[1], "1");
+            if(minute.equals(SystemGlobals.getDefaultsValue("ftp.checkswitchstarttime"))){
+            	SystemGlobals.setProvinceGetFile(tmpRFN[0], tmpRFN[1], "1");
             }
             
-            int start = Integer.parseInt(SystemGlobals.getProvinceFile(i, tmpRFN[1]));
+            int start = Integer.parseInt(SystemGlobals.getProvinceFile(tmpRFN[0], tmpRFN[1]));
             SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmm");
             SimpleDateFormat dfH = new SimpleDateFormat("yyyyMMddHH");
             Date d = df.parse(tmpRFN[2] + Hour + minute);
             String ArchiveFileHH = dfH.format(d.getTime() + 30 * 60 * 1000);
-            if("1".equals(SystemGlobals.getProvinceGetFile(i, tmpRFN[1]))){
+            if("1".equals(SystemGlobals.getProvinceGetFile(tmpRFN[0], tmpRFN[1]))){
             	String ArchiveFile = tmpRFN[0] + "_" + tmpRFN[1] + "_" + ArchiveFileHH + ".dat";
             	
 	        	List<String> fileNames = listFiles(".");
@@ -84,17 +85,17 @@ public class FtpDownloadClienter{
 		            client.download(ArchiveFile, new File( localFolderPath + File.separator + new File(remoteFileName).getName()), start, new MyTransferListener());
 	            	File f =  new File(localFolderPath + File.separator + remoteFileName);
 	            	f.renameTo(new File(localFolderPath + File.separator + ArchiveFile));
-		            SystemGlobals.setProvinceFile(i, tmpRFN[1], "0");
-	            	SystemGlobals.setProvinceGetFile(i, tmpRFN[1], "0");
+		            SystemGlobals.setProvinceFile(tmpRFN[0], tmpRFN[1], "0");
+	            	SystemGlobals.setProvinceGetFile(tmpRFN[0], tmpRFN[1], "0");
 	            }else{
 	            	log.info("已检查,未切换!");
 		            client.download(remoteFileName, new File( localFolderPath + File.separator + new File(remoteFileName).getName()), start, new MyTransferListener());
-		            SystemGlobals.setProvinceFile(i, tmpRFN[1], Integer.toString((SystemGlobals.getFileLength() + start)));
+		            SystemGlobals.setProvinceFile(tmpRFN[0], tmpRFN[1], Integer.toString((SystemGlobals.getFileLength() + start)));
 	            }
 	        }else{
             	log.info("不需检查!");
 		        client.download(remoteFileName, new File( localFolderPath + File.separator + new File(remoteFileName).getName()), start, new MyTransferListener());
-		        SystemGlobals.setProvinceFile(i, tmpRFN[1], Integer.toString((SystemGlobals.getFileLength() + start)));
+		        SystemGlobals.setProvinceFile(tmpRFN[0], tmpRFN[1], Integer.toString((SystemGlobals.getFileLength() + start)));
 	        }
             
             
@@ -128,31 +129,6 @@ public class FtpDownloadClienter{
 		} catch (Exception e) {
 		}
 		return fileNameList;
-	}
-    
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		log.debug("Ftp startting...");
-		
-		String ftpHost = "192.168.202.13";       
-		int ftpPort = 21;
-		String ftpUser = "jiangsu";
-		String ftpPasswd = "password";
-		
-		FtpDownloadClienter myFtp = new FtpDownloadClienter(ftpHost, ftpPort, ftpUser, ftpPasswd);
-		try{
-			myFtp.openConnection();
-			//FtpThread ftpThread = new FtpThread(myFtp);
-			//for(int i = 0; i <= 0; i++){
-			//	Thread t = new Thread(ftpThread);
-			//	t.start();
-			//}
-			myFtp.listFiles("");
-		}catch(Exception e){
-			e.printStackTrace();
-		}finally{
-//			myFtp.closeConnection();
-		}
 	}
     
 }

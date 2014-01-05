@@ -21,8 +21,6 @@ public class Weixin extends HttpServlet {
 		try {
 			handler = new WeixinHandler(req, resp);
 			handler.valid();
-//			handler.responseMsgOne("The one!!");
-//			handler.responseMsgOne("The two!!");
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

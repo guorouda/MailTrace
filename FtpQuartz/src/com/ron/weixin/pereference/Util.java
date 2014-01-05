@@ -3,38 +3,41 @@ package com.ron.weixin.pereference;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.log4j.Logger;
-import org.eclipse.jdt.internal.compiler.ast.ThisReference;
-
-import com.ron.weixin.LoginWeixinWEB;
-import com.ron.weixin.utility.json.JSONException;
 
 public class Util {
 	private static Logger log = Logger.getLogger(Util.class);
 	
-	public static String SearchFileByName(int i, String remoteFileName){
-	    File file = new File("d:\\temp\\" + remoteFileName);
+	public static String SearchFileByName(String remoteFileName){
+	    File file = new File(SystemGlobals.getDefaultsValue("download.path") + remoteFileName);
 	    BufferedReader reader = null; 
 	    
 	    try { 
+	    	String[] rfn = remoteFileName.split("_");
 	    	InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "GBK");   
 	    	reader = new BufferedReader(isr);	    	 
 	    	String tempString = null; 
 	    	String keyword = null; 
 	        while ((tempString = reader.readLine()) != null){ 
 	        	String[] tempStrings = tempString.split("\t");
-	        	if(i==3){
-	        		keyword = tempStrings[10];
-	        	}else{
-	        		keyword = tempStrings[1];
+	        	switch(rfn[0]){
+	        		case "03003":
+	        			keyword = tempStrings[1];
+	        			break;
+	        		case "03004":
+	        			keyword = tempStrings[1];
+	        			break;
+	        		case "03005":
+	        			keyword = tempStrings[1];
+	        			break;
+	        		case "03016":
+	        			keyword = tempStrings[10];
+	        			break;
 	        	}
-//	        	log.info(keyword);
+//	        	log.info("keyword: " + keyword);
 	        	if(SystemGlobals.searchKeywords(keyword)>0){
 	        		log.info("find: " + tempString);
 	        		return tempString;

@@ -17,10 +17,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import net.sf.json.JSONObject;
+
 import org.apache.http.client.ClientProtocolException;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import com.ron.ems.Ems83;
 import com.ron.weixin.LoginWeixinWEB;
 import com.ron.weixin.ftp.FtpDownloadClienter;
 import com.ron.weixin.pereference.SystemGlobals;
@@ -48,12 +51,19 @@ public class TestCase {
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");   
         System.out.println(df.format(new Date().getTime() - 24 * 60 * 60 * 1000));
 	}
+	
+	@Test
+	public void testY() throws ClientProtocolException, IOException, URISyntaxException{
+		Ems83 e = new Ems83();
+		JSONObject jo = e.GetDetail("1084117162006");
+	}
     
 	@Test
 	public void TestPrintHZ(){
 	    int i = 1;
-	    String remoteFileName = "03004_32_20131231.dat";
-	    File file = new File("d:\\temp\\" + remoteFileName);
+//	    String remoteFileName = "03004_32_20131231.dat";
+//	    File file = new File("d:\\temp\\" + remoteFileName);
+	    File file = new File("C:\\Users\\sun\\Documents\\03005_32_20131231.dat");
 	    BufferedReader reader = null; 
 	    
 	    try { 
@@ -68,7 +78,7 @@ public class TestCase {
 	        	}else{
 	        		keyword = tempStrings[1];
 	        	}
-	        	log.info(tempString);
+//	        	log.info(tempString);
 	        	if(SystemGlobals.searchKeywords(keyword)>0){
 	        		log.info("find: " + tempString);
 	      //  		return tempString;

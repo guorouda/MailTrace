@@ -1,0 +1,129 @@
+
+    .body{
+        background-color: Blue;
+        color:#ff0000;	
+    }
+
+    .pageTitle{ 
+        background-image: url(../images/head.png);
+	    background-repeat:repeat-x;
+	    height:45px;
+	    width:100%;
+    }
+    
+    .pageTitle .logo{
+        background-image: url(../images/logo.png);
+	    background-repeat:no-repeat;
+	    width:110px;
+    }
+    
+    .pageTitle .title{
+        width:80px;
+        font-size: 12pt;
+        color:#FDFCF8;
+    }
+    
+    .pageTitle .btn{
+        padding-right:2px;
+        text-align:right;
+        float:right;
+    }
+
+
+    .from{
+    
+    }
+    
+    .from .lable{
+        /**background-color:#F3F3F3;*/
+        color:#1B1B1B;
+        font-size:14px;
+        width:80px;
+        padding-left:5px;
+        border-bottom:1px solid #cccccc;
+     
+    }
+
+    .from .field{
+        /**background-color:#F3F3F3;*/
+        border-bottom:1px solid #cccccc;  
+    }
+    
+    .from .text{
+        border-style:none;
+        height:40px;
+        width:100%;
+        color:#0575BF;
+        font-size:14px;
+        background-color: transparent;
+    }
+
+    .from .tab{
+        background-color:#E1DFDF;
+        color:#000000;
+        font-size:14px;
+        height:30px;
+        margin-top:-5px;
+        font-weight:normal;
+        padding-left:14px;
+    }  
+   
+    .from .tip{
+        background-color:#E1DFDF;
+        color:#FE9D10;
+        font-size:14px;
+        height:32px;
+        font-weight:normal; 
+        /**text-shadow:none; */ 
+    } 
+
+    .from .line{
+	    background-image: url(../images/line.png);
+	    background-repeat:repeat-x;
+	    width:100%;
+	    height:6px;
+    } 
+
+
+
+
+
+
+
+    .ui-page{  
+        background:#F6F6F6;  
+        color:#000000;
+    }
+
+
+    .ui-icon-map {
+	    background:url('../images/map.png')50% 50% no-repeat;
+	    background-size:16px 16px; 
+    }
+
+    .ui-icon-hand {
+	    background:url('../images/hand.gif')50% 50% no-repeat;
+	    background-size:16px 16px;
+    }
+
+    .ui-icon-yyy {
+	    background:url('../images/yy.png')50% 50% no-repeat;
+	    background-size:20px 20px;
+    }
+    
+    .ui-icon-address {
+	    background:url('../images/address.png')50% 50% no-repeat;
+        background-size:16px 16px;
+    } 
+    
+    .ui-icon-order {
+	    background:url('../images/order.png')50% 50% no-repeat;
+	    background-size: 16px 16px;
+    }
+
+    .ui-icon-phone {
+	    background:url('../images/phone.png')50% 50% no-repeat;
+	    background-size:16px 16px;
+    }
+    
+    

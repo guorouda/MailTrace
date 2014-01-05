@@ -19,7 +19,8 @@ public class initServlet extends HttpServlet {
 
 		try {
 			log.debug("initiating ...");
-			SystemGlobals.initGlobals();
+			String appPath = config.getServletContext().getRealPath("");
+			SystemGlobals.initGlobals(appPath, appPath + "/WEB-INF/config/SystemGlobals.properties");
 		}catch (Exception e) {
 	//		throw new WeixinStartupException("Error while starting JForum", e);
 		}

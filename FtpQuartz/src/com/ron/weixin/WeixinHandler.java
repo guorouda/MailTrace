@@ -24,7 +24,7 @@ public class WeixinHandler {
 	private static Logger log = Logger.getLogger(WeixinHandler.class);
 	
 	private String TOKEN = "Guo";
-	private String mailToken = "#dqG542Sdg";
+	//private String mailToken = "#dqG542Sdg";
 	
 	private String fromUsername = null;
 	private String toUsername = null;

@@ -35,12 +35,16 @@ public class SystemGlobals implements VariableStore {
 	private CloseableHttpClient Weixinhttpclient = null;
 	private CloseableHttpClient Emshttpclient = null;
 	
+	private static String os;
+	
 	public static Logger log = Logger.getLogger(SystemGlobals.class);
 	
 	private SystemGlobals(){}
 	
 	public static void initGlobals(String appPath, String mainConfigurationFile){
 		globals = new SystemGlobals();
+		
+		os = System.getProperty("os.name");
 		
 		globals.defaultConfig = mainConfigurationFile;
 		globals.defaults = new Properties();
@@ -71,6 +75,15 @@ public class SystemGlobals implements VariableStore {
 				.setDefaultRequestConfig(EmsrequestConfig)
 				.setDefaultCookieStore(EmscookieStore)
 				.build();
+		
+		String os_unix = SystemGlobals.getDefaultsValue("unix");
+		String os_windows = SystemGlobals.getDefaultsValue("windows");
+		if(os.toLowerCase().startsWith("win")){
+			SystemGlobals.setDefaultsValue("download.path", os_windows );			
+		}else{
+			SystemGlobals.setDefaultsValue("download.path", os_unix);			
+		}
+		
 		
 		String[] s = SystemGlobals.getDefaultsValue("file.code").split(",");
 		String[] p = SystemGlobals.getDefaultsValue("province.code").split(",");
@@ -156,12 +169,20 @@ public class SystemGlobals implements VariableStore {
 	}
 	
 	public static void setDaySwitch(String key, String provice, String value){
-		globals.DaySwitchMap.get(key).setProperty(provice, value);
+		Properties p = globals.DaySwitchMap.get(key);
+		if(p != null){
+			p.setProperty(provice, value);
+		}
 	}
 
 	public static String getDaySwitch(String key, String province){
 		log.info(key + ":" + province);
-		return globals.DaySwitchMap.get(key).getProperty(province);
+		String result = null;
+		Properties p = globals.DaySwitchMap.get(key);
+		if(p != null){
+			result = p.getProperty(province);
+		}
+		return  result;
 	}
 	
 	public static CloseableHttpClient getEmsHttpclient(){
@@ -179,6 +200,10 @@ public class SystemGlobals implements VariableStore {
 	
 	public static String getDefaultsValue(String variableName){
 		return globals.defaults.getProperty(variableName);
+	}
+	
+	public static void setDefaultsValue(String variableName, String value){
+		globals.defaults.setProperty(variableName, value);
 	}
 	
 	// TODO

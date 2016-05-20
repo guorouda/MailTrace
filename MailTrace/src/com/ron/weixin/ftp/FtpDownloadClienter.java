@@ -24,7 +24,6 @@ public class FtpDownloadClienter{
     private String ftpPasswd;
 
     public FtpDownloadClienter(String ftpHost, int ftpPort, String ftpUser, String ftpPasswd) {
-        super();
         this.ftpHost = ftpHost;
         this.ftpPort = ftpPort;
         this.ftpUser = ftpUser;

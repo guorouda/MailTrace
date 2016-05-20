@@ -19,7 +19,6 @@ public class FtpJob implements Job {
 
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
-		// TODO Auto-generated method stub
 		log.debug("Ftp startting...");
 		
 		try{

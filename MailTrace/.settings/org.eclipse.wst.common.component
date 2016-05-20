@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="FtpQuartz">
+    <wb-module deploy-name="MailTrace">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <property name="java-output-path" value="/FtpQuartz/build/classes"/>
-        <property name="context-root" value="FtpQuartz"/>
+        <property name="java-output-path" value="/MailTrace/build/classes"/>
+        <property name="context-root" value="MailTrace"/>
     </wb-module>
 </project-modules>
